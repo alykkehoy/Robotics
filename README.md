@@ -9,4 +9,4 @@ Create Braitenberg vehicles 2a, 2b, 3a and 3b.
 
 ## Lab 02
 #### Goal
-reate a PID controll robot to follow the walls 
+Create a PID controll robot to follow the walls.
