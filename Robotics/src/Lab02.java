@@ -7,14 +7,16 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import lejos.hardware.sensor.NXTUltrasonicSensor;
 
-
 public class Lab02 {
 	
 	private static NXTUltrasonicSensor ultrasonic_front = new NXTUltrasonicSensor(SensorPort.S2);
 	private static NXTUltrasonicSensor ultrasonic_side = new NXTUltrasonicSensor(SensorPort.S1);
 	
 	public static void main(String[] args) {
-		
+		EV3LargeRegulatedMotor motor_r = new EV3LargeRegulatedMotor(MotorPort.A);
+		EV3LargeRegulatedMotor motor_l = new EV3LargeRegulatedMotor(MotorPort.B);
+		motor_r.forward();
+		motor_l.forward();
 		
 		final SampleProvider test_front = ultrasonic_front.getDistanceMode();
 		final SampleProvider test_side = ultrasonic_side.getDistanceMode();
@@ -32,18 +34,23 @@ public class Lab02 {
 			float error_front = distance_front - sample_front[0];
 			float error_side = distance_side - sample_side[0];
 
+			motor_r.setSpeed(0);
+			motor_l.setSpeed(0);
 		}
-		
-//		final int iteration_threshold = 100;
-//		for(int i = 0; i <= iteration_threshold; i++){
-//			float [] sample3 = new float[test.sampleSize()];
-//			test.fetchSample(sample3, 0);
-//			distanceValue = (int)sample3[0];
-//			
-//			System.out.println(sample3[0]);
-//			
-//			Delay.msDelay(500);
-//			
-//		}
+	}
+	
+	public float calc_p(){
+		float p_val = 0;
+		return p_val;
+	}
+	
+	public float calc_i(){
+		float i_val = 0;
+		return i_val;
+	}
+	
+	public float calc_d(){
+		float d_val = 0;
+		return d_val;
 	}
 }
