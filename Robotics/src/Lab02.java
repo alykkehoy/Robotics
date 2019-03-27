@@ -1,3 +1,5 @@
+package com.mydomain;
+
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
@@ -28,11 +30,11 @@ public class Lab02 {
 		float [] sample_side = new float[test_side.sampleSize()];
 		
 		float distance_front = 0;
-		float distance_side = 0;
+		float distance_side = (float) 0.3;
 		
-		double kp = 1.2;
-		double ki = 0.0008; 
-		double kd = 5;
+		double kp = 200;
+		double ki = 0; 
+		double kd = 0;
 		
 		double integral_front = 0;
 		double integral_side = 0;
@@ -53,8 +55,13 @@ public class Lab02 {
 			integral_front = integral_front + error_front;
 			integral_side = integral_side + error_side;
 			
+			//Might not want to have front sensor on all three 
+			//Start with just kp on front?
+			
 			double correction_front = kp * error_front + ki * integral_front + kd * derivative_front;
 			double correction_side = kp * error_side + ki * integral_side + kd * derivative_side;
+			
+			
 
 			double motor_r_turn = 20 - correction_side;
 			double motor_l_turn = 20 + correction_side;
@@ -64,6 +71,8 @@ public class Lab02 {
 			
 			last_error_front = error_front;
 			last_error_side = error_side;
+			
+			System.out.println(correction_side);
 		}
 	}
 	
