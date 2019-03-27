@@ -46,25 +46,26 @@ public class Lab02 {
 			test_front.fetchSample(sample_front, 0);
 			test_side.fetchSample(sample_side, 0);
 
-			float error_front = distance_front - sample_front[0];
-			float error_side = distance_side - sample_side[0];
+			double motor_r_turn = 0;
+			double motor_l_turn = 0;
 			
-			float derivative_front = error_front - last_error_front;
-			float derivative_side = error_side - last_error_side;
-			
-			integral_front = integral_front + error_front;
-			integral_side = integral_side + error_side;
-			
-			//Might not want to have front sensor on all three 
-			//Start with just kp on front?
-			
-			double correction_front = kp * error_front + ki * integral_front + kd * derivative_front;
-			double correction_side = kp * error_side + ki * integral_side + kd * derivative_side;
-			
-			
-
-			double motor_r_turn = 20 - correction_side;
-			double motor_l_turn = 20 + correction_side;
+			if(sample_front[0] != Float.POSITIVE_INFINITY){
+					
+				float error_front = distance_front - sample_front[0];
+				float error_side = distance_side - sample_side[0];
+				
+				float derivative_front = error_front - last_error_front;
+				float derivative_side = error_side - last_error_side;
+				
+				integral_front = integral_front + error_front;
+				integral_side = integral_side + error_side;
+							
+				double correction_front = kp * error_front + ki * integral_front + kd * derivative_front;
+				double correction_side = kp * error_side + ki * integral_side + kd * derivative_side;
+	
+				motor_r_turn = -1 * correction_side;
+				motor_l_turn = correction_side;
+			}
 			
 			motor_r.setSpeed((int)(motor_r_speed + motor_r_turn));
 			motor_l.setSpeed((int)(motor_l_speed + motor_l_turn));
