@@ -20,8 +20,8 @@ public class Lab02 {
 		motor_r.forward();
 		motor_l.forward();
 		
-		double motor_r_speed = 150;
-		double motor_l_speed = 150;
+		double motor_r_speed = 200;
+		double motor_l_speed = 200;
 		
 		final SampleProvider test_front = ultrasonic_front.getDistanceMode();
 		final SampleProvider test_side = ultrasonic_side.getDistanceMode();
@@ -32,9 +32,13 @@ public class Lab02 {
 		float distance_front = 0;
 		float distance_side = (float) 0.3;
 		
-		double kp = 200;
-		double ki = 0; 
-		double kd = 0;
+		double kp_side = 200;
+		double ki_side = .5; 
+		double kd_side = 200;
+		
+		double kp_front = 200;
+		double ki_front = .5; 
+		double kd_front = 200;
 		
 		double integral_front = 0;
 		double integral_side = 0;
@@ -49,46 +53,45 @@ public class Lab02 {
 			double motor_r_turn = 0;
 			double motor_l_turn = 0;
 			
-			if(sample_front[0] != Float.POSITIVE_INFINITY){
+			if(sample_side[0] != Float.POSITIVE_INFINITY){
 					
-				float error_front = distance_front - sample_front[0];
 				float error_side = distance_side - sample_side[0];
 				
-				float derivative_front = error_front - last_error_front;
 				float derivative_side = error_side - last_error_side;
 				
-				integral_front = integral_front + error_front;
 				integral_side = integral_side + error_side;
 							
-				double correction_front = kp * error_front + ki * integral_front + kd * derivative_front;
-				double correction_side = kp * error_side + ki * integral_side + kd * derivative_side;
+				double correction_side = kp_side * error_side + ki_side * integral_side + kd_side * derivative_side;
 	
-				motor_r_turn = -1 * correction_side;
-				motor_l_turn = correction_side;
+				motor_r_turn += -1 * correction_side;
+				motor_l_turn += correction_side;
+				
+				last_error_side = error_side;
 			}
+
+			System.out.println(sample_front[0]);
+
+			if(sample_front[0] != Float.POSITIVE_INFINITY && sample_front[0] < 0.4){
+				
+				float error_front = distance_front - sample_front[0];
+				
+				float derivative_front = error_front - last_error_front;
+				
+				integral_front = integral_front + error_front;
+							
+				double correction_front = kp_front * error_front + ki_front * integral_front + kd_front * derivative_front;
+				
+	
+				motor_r_turn += correction_front;
+				motor_l_turn += -1 * correction_front;
+				
+				last_error_front = error_front;
+			}
+
 			
 			motor_r.setSpeed((int)(motor_r_speed + motor_r_turn));
 			motor_l.setSpeed((int)(motor_l_speed + motor_l_turn));
 			
-			last_error_front = error_front;
-			last_error_side = error_side;
-			
-			System.out.println(correction_side);
 		}
-	}
-	
-	public float calc_p(double kp, float error){
-		float p_val = (float)(kp * error);
-		return p_val;
-	}
-	
-	public float calc_i(double ki, float error){
-		float i_val = 0;
-		return i_val;
-	}
-	
-	public float calc_d(double kd, float error){
-		float d_val = 0;
-		return d_val;
 	}
 }
