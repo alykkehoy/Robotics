@@ -23,12 +23,20 @@ public class IRSearch implements Behavior{
 	@Override
 	public boolean takeControl() {
 		IR_sensor.fetchSample(sample_IR, 0);
-		return (sample_IR[0] != 0 && sample_IR[1] != Float.POSITIVE_INFINITY);
+		return (sample_IR[0] != Float.POSITIVE_INFINITY);
 	}
 
 	@Override
 	public void action() {
-		// TODO Auto-generated method stub
+		System.out.println("IR Search");
+		System.out.println(sample_IR[0]);
+		
+		if(sample_IR[1] < 0){
+			pilot.rotate(-90);
+		}
+		else if(sample_IR[1] > 0){
+			pilot.rotate(90);
+		}
 		
 	}
 
