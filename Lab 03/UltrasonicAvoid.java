@@ -31,10 +31,10 @@ public class UltrasonicAvoid  implements Behavior{
 		this.left = left;
 		this.right = right;
 		
-		test_left = left.getDistanceMode();
-		test_right = right.getDistanceMode();
-		float [] sample_left = new float[test_left.sampleSize()];
-		float [] sample_right = new float[test_right.sampleSize()];
+		this.test_left = left.getDistanceMode();
+		this.test_right = right.getDistanceMode();
+		this.sample_left = new float[test_left.sampleSize()];
+		this.sample_right = new float[test_right.sampleSize()];
 
 	}
 	
@@ -51,14 +51,14 @@ public class UltrasonicAvoid  implements Behavior{
 		System.out.println("UltrasonicAvoid");
 
 		if(sample_left[0] < 1){
-			System.out.println("left");
+//			System.out.println("left");
 			pilot.rotate(90);
-			pilot.travel(10);
+//			pilot.travel(10);
 		}
 		else if(sample_right[0] < 1){
-			System.out.println("right");
+//			System.out.println("right");
 			pilot.rotate(-90);
-			pilot.travel(10);			
+//			pilot.travel(10);			
 		}
 	}
 
