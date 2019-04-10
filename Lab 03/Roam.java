@@ -1,23 +1,28 @@
+import java.io.File;
+
+import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3IRSensor;
 import lejos.robotics.SampleProvider;
-import lejos.hardware.sensor.NXTUltrasonicSensor;
 
-import lejos.robotics.navigation.DifferentialPilot;
-import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 
 public class Roam implements Behavior{
+	EV3IRSensor IR_sensor;
+	final SampleProvider test_IR_sensor;
+	float[] sample_IR;
+
 	boolean surpressed = false;
-	private DifferentialPilot pilot = new DifferentialPilot(4.32f, 12.2f, Motor.A, Motor.D);
 	
-	public Roam(){	
-		
+	public Roam(EV3IRSensor IR_sensor){	
+		this.IR_sensor = IR_sensor;
+		this.test_IR_sensor = IR_sensor.getSeekMode();
+		this.sample_IR = new float[test_IR_sensor.sampleSize()];
 	}
 
 	@Override
 	public boolean takeControl() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -32,6 +37,16 @@ public class Roam implements Behavior{
 		while (!surpressed){
 			Motor.A.forward();
 			Motor.D.forward();
+			test_IR_sensor.fetchSample(sample_IR, 0);
+			
+			if(sample_IR[1] != 0 && sample_IR[1] != Float.POSITIVE_INFINITY && sample_IR[1] < 5){
+				System.out.println(sample_IR[1]);
+				Motor.D.stop();
+				Motor.A.stop();
+				Sound.beep();
+				
+				System.exit(0);
+			}
 		}
 	}
 
