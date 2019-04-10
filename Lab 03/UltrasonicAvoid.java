@@ -18,6 +18,11 @@ public class UltrasonicAvoid  implements Behavior{
 	private DifferentialPilot pilot = new DifferentialPilot(4.32f, 12.2f, Motor.A, Motor.D);
 	NXTUltrasonicSensor left;
 	NXTUltrasonicSensor right;
+	
+	final float MAX_LEFT = 0.25f;
+	final float MAX_RIGHT = 0.25f;
+	
+	boolean surpressed;
 
 	final SampleProvider test_left;
 	final SampleProvider test_right;
@@ -43,28 +48,35 @@ public class UltrasonicAvoid  implements Behavior{
 		test_left.fetchSample(sample_left, 0);
 		test_right.fetchSample(sample_right, 0);
 
-		return (sample_left[0] < 1 || sample_right[0] < 1);
+		return (sample_left[0] < MAX_LEFT || sample_right[0] < MAX_RIGHT);
 	}
 
 	@Override
 	public void action() {
 		System.out.println("UltrasonicAvoid");
+		surpressed = false;
+		
+//		Motor.A.setSpeed(100);
+//		Motor.D.setSpeed(100);
+//		while(!surpressed && sample_left[0] < MAX_LEFT){
+//			Motor.A.forward();
+//		}
+//		
+//		while(!surpressed && sample_right[0] < MAX_RIGHT){
+//			Motor.D.forward();
+//		}
 
-		if(sample_left[0] < 1){
-//			System.out.println("left");
+		if(sample_left[0] < MAX_LEFT){
 			pilot.rotate(90);
-//			pilot.travel(10);
 		}
-		else if(sample_right[0] < 1){
-//			System.out.println("right");
+		else if(sample_right[0] < MAX_RIGHT){
 			pilot.rotate(-90);
-//			pilot.travel(10);			
 		}
 	}
 
 	@Override
 	public void suppress() {
 		// TODO Auto-generated method stub
-		suppressed = true;
+		surpressed = true;
 	}
 }

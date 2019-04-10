@@ -18,9 +18,10 @@ public class Lab03 {
 	
 	public static void main(String[] args) {
 		Behavior b1 = new UltrasonicAvoid(ultrasonic_left, ultrasonic_right);
+		Behavior b2 = new IRSearch();
 		Behavior b3 = new Roam();
 		
-		Behavior[] behaviors = {b3, b1};
+		Behavior[] behaviors = {b3, b2, b1};
 		
 		Arbitrator arbitrator = new Arbitrator(behaviors);
 		arbitrator.go();

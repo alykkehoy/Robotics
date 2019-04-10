@@ -10,9 +10,8 @@ import lejos.robotics.subsumption.Behavior;
 public class Roam implements Behavior{
 	boolean surpressed = false;
 	private DifferentialPilot pilot = new DifferentialPilot(4.32f, 12.2f, Motor.A, Motor.D);
-	public Roam(){
-		
-		
+	
+	public Roam(){	
 		
 	}
 
@@ -26,10 +25,11 @@ public class Roam implements Behavior{
 	public void action() {
 		System.out.println("Roaming");
 		surpressed = false;
+
+		Motor.A.setSpeed(200);
+		Motor.D.setSpeed(200);
 		
 		while (!surpressed){
-			Motor.A.setSpeed(200);
-			Motor.D.setSpeed(200);
 			Motor.A.forward();
 			Motor.D.forward();
 		}
