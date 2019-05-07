@@ -15,31 +15,38 @@ import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.navigation.Pose;
 
+
 public class Final {
 	
-	final static double goal_x = 7;
-	final static double goal_y = 7;
+	final static double goal_x = 0;
+	final static double goal_y = 100;
 	
 	static double current_x = 0;
 	static double current_y = 0;
 	
 	
+	float [] sample_left;
+	float [] sample_right;
+	
 //	distance between the 2 drive wheels from
 //	the center point of the contact patches
-	final static double b = .5;
-	static double theta = Math.toRadians(90);
+	final static double b = 20; //cms
+	static double theta = 1.5708; //1.5708
 	
 	
 	static double motor_r_tacho_count = 0;
 	static double motor_l_tacho_count = 0;
-
-	private static NXTUltrasonicSensor ultrasonic_left = new NXTUltrasonicSensor(SensorPort.S1);
-	private static NXTUltrasonicSensor ultrasonic_right = new NXTUltrasonicSensor(SensorPort.S2);
 	
-	private static EV3LargeRegulatedMotor motor_r = new EV3LargeRegulatedMotor(MotorPort.D);
-	private static EV3LargeRegulatedMotor motor_l = new EV3LargeRegulatedMotor(MotorPort.A);
+	private static EV3LargeRegulatedMotor motor_r = new EV3LargeRegulatedMotor(MotorPort.A);
+	private static EV3LargeRegulatedMotor motor_l = new EV3LargeRegulatedMotor(MotorPort.D);
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		float[] left_sample = new float[3];
+		float[] right_sample = new float[3];
+		
+		Scan scan = new Scan(left_sample, right_sample);
+		new Thread(scan).run();
+		
 		motor_r.resetTachoCount();
 		motor_l.resetTachoCount();
 		
@@ -48,21 +55,25 @@ public class Final {
 		double s_r;
 		double s_l;
 		int loop_count = 0;
+		
+		double constant_tacho = (Math.PI * 3.4) / 360;
 
 		
 		while(current_x <= goal_x && current_y <= goal_y){			
-			double delta_r_tacho = motor_r.getTachoCount() - motor_r_tacho_count; //Need to fix theese, still going neg
-			double delta_l_tacho = motor_l.getTachoCount() - motor_l_tacho_count; //Need to fix theese, still going neg
-			
-			s_r = delta_r_tacho * 1;
-			s_l = delta_l_tacho * 1;
-			
-			//System.out.print(delta_r_tacho);
+			double delta_r_tacho = motor_r.getTachoCount() - motor_r_tacho_count;
+			double delta_l_tacho = motor_l.getTachoCount() - motor_l_tacho_count;
 			
 			
-			if(loop_count%100 == 0){
-			System.out.println("Current X is: " + current_x);
-			System.out.println("Current Y is: " + current_y);
+			motor_r_tacho_count = motor_r.getTachoCount();
+			motor_l_tacho_count = motor_l.getTachoCount();
+			
+			s_r = delta_r_tacho * constant_tacho;
+			s_l = delta_l_tacho * constant_tacho;
+						
+			if(loop_count%10000 == 0){
+				System.out.println("Current X is: " + current_x);
+				System.out.println("Current Y is: " + current_y);
+				System.out.println("Current theta is: " + theta);
 			}
 			
 			
@@ -70,11 +81,18 @@ public class Final {
 			delta_theta = ((s_r - s_l) / b);
 
 			double turn = Math.atan2(goal_y - current_y, goal_x - current_y);
-
-			turn = turn * 25;
+			double output;
 			
-			motor_r.setSpeed(200 + (int)turn);
-			motor_l.setSpeed(200 - (int)turn);
+			double error = turn - theta;
+
+			output = error * 25; //25 is kp
+			
+			float sum = 10 * left_sample[0] + 5 * left_sample[1] + 1 * left_sample[2]
+					  + 10 * right_sample[0] + 5 * right_sample[1] + 1 * right_sample[2];
+			
+			motor_r.setSpeed(200 + (int)output + (int)sum);
+			motor_l.setSpeed(200 - (int)output - (int)sum);
+			// base movement speed based on how far from goal
 			
 			motor_r.forward();
 			motor_l.forward();
@@ -87,11 +105,7 @@ public class Final {
 			current_y += delta_y;
 			theta += delta_theta;
 			
-			motor_r_tacho_count = motor_r.getTachoCount();
-			motor_l_tacho_count = motor_l.getTachoCount();
-			
 			loop_count++;
-				
 			}
 		}
 	}
