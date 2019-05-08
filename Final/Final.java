@@ -25,8 +25,8 @@ public class Final {
 	static double current_y = 0;
 	
 	
-	float [] sample_left;
-	float [] sample_right;
+	static float [] sample_left;
+	static float [] sample_right;
 	
 //	distance between the 2 drive wheels from
 //	the center point of the contact patches
@@ -87,12 +87,13 @@ public class Final {
 
 			output = error * 25; //25 is kp
 			
-			float sum = 10 * left_sample[0] + 5 * left_sample[1] + 1 * left_sample[2]
+			float sum = -10 * left_sample[0] + -5 * left_sample[1] + -1 * left_sample[2]
 					  + 10 * right_sample[0] + 5 * right_sample[1] + 1 * right_sample[2];
+			
+			System.out.println(sample_left[0]);
 			
 			motor_r.setSpeed(200 + (int)output + (int)sum);
 			motor_l.setSpeed(200 - (int)output - (int)sum);
-			// base movement speed based on how far from goal
 			
 			motor_r.forward();
 			motor_l.forward();
